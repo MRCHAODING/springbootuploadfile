@@ -37,15 +37,30 @@ public class UploadController {
         //获取文件名
         String fileName = fileUpload.getOriginalFilename();
         //获取文件后缀名
+        // 获取存放位置的规范路径
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         //重新生成文件名
         fileName = UUID.randomUUID()+suffixName;
-
+        String userHome = System.getProperties().getProperty("user.home");
+        System.out.println(userHome);
+        File dir = new File(userHome+ File.separator+"uploadFile");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
         //指定本地文件夹存储图片，写到需要保存的目录下
         String filePath = "D:\\javaText\\";
+
         try {
+            String realPath = dir.getCanonicalPath();
+            // 上传该文件/图像至该文件夹下
+            fileUpload.transferTo(new File(realPath+File.separator+fileName));
+
+            System.out.println(dir.getAbsolutePath()+ File.separator+fileName);
+//            fileUpload.transferTo(new File(realPath+fileName));
             //将图片保存到static文件夹里
-            fileUpload.transferTo(new File(filePath+fileName));
+//            错误报告，写两次会出错
+//            System.out.println(filePath+fileName);
+//            fileUpload.transferTo(new File(filePath+fileName));
             pictureMapper.addPicture(new Picture(null,fileName));
             //返回提示信息
             return new Message(0,"上传成功");
